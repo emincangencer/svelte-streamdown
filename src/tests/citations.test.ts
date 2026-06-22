@@ -132,6 +132,51 @@ describe('citations', () => {
 		expect(citationTokens[0].text).toBe('[ref; ref2]');
 	});
 
+	test('should parse multi-digit citation [123]', () => {
+		const tokens = lex('Citation [123]');
+		const paragraphToken = getFirstTokenByType(tokens, 'paragraph');
+
+		expect(paragraphToken).toBeDefined();
+		const paragraphTokens = paragraphToken.tokens || [];
+		const citationTokens = paragraphTokens.filter(
+			(t: { type: string }) => t.type === 'inline-citations'
+		);
+
+		expect(citationTokens.length).toBe(1);
+		expect(citationTokens[0].keys).toEqual(['123']);
+		expect(citationTokens[0].text).toBe('[123]');
+	});
+
+	test('should parse mixed alphanumeric citation [source1]', () => {
+		const tokens = lex('Citation [source1]');
+		const paragraphToken = getFirstTokenByType(tokens, 'paragraph');
+
+		expect(paragraphToken).toBeDefined();
+		const paragraphTokens = paragraphToken.tokens || [];
+		const citationTokens = paragraphTokens.filter(
+			(t: { type: string }) => t.type === 'inline-citations'
+		);
+
+		expect(citationTokens.length).toBe(1);
+		expect(citationTokens[0].keys).toEqual(['source1']);
+		expect(citationTokens[0].text).toBe('[source1]');
+	});
+
+	test('should parse alphabetic citation [anything]', () => {
+		const tokens = lex('Citation [anything]');
+		const paragraphToken = getFirstTokenByType(tokens, 'paragraph');
+
+		expect(paragraphToken).toBeDefined();
+		const paragraphTokens = paragraphToken.tokens || [];
+		const citationTokens = paragraphTokens.filter(
+			(t: { type: string }) => t.type === 'inline-citations'
+		);
+
+		expect(citationTokens.length).toBe(1);
+		expect(citationTokens[0].keys).toEqual(['anything']);
+		expect(citationTokens[0].text).toBe('[anything]');
+	});
+
 	test('should parse citations in the middle of text', () => {
 		const tokens = lex('Start text [1] middle text [2] end text');
 		const paragraphToken = getFirstTokenByType(tokens, 'paragraph');
@@ -262,6 +307,24 @@ describe('citations', () => {
 		expect(citationTokens.length).toBe(1);
 		expect(citationTokens[0].keys).toEqual(['ref']);
 	});
+
+	test('should parse all citation variants in one text', () => {
+		const tokens = lex('See [1] [123] and [source1] and [anything]');
+		const paragraphToken = getFirstTokenByType(tokens, 'paragraph');
+
+		expect(paragraphToken).toBeDefined();
+		const paragraphTokens = paragraphToken.tokens || [];
+
+		const citationTokens = paragraphTokens.filter(
+			(t: { type: string }) => t.type === 'inline-citations'
+		);
+
+		// [1] [123] are merged into one token (adjacent bracket groups), then [source1], then [anything]
+		expect(citationTokens.length).toBe(3);
+		expect(citationTokens[0].keys).toEqual(['1', '123']);
+		expect(citationTokens[1].keys).toEqual(['source1']);
+		expect(citationTokens[2].keys).toEqual(['anything']);
+	});
 });
 
 describe('incomplete markdown', () => {
@@ -300,5 +363,19 @@ describe('incomplete markdown', () => {
 		const result = parseIncompleteMarkdown(input);
 
 		expect(result).toBe('Multiple citations [ref1] and [ref2]');
+	});
+
+	test('should not modify complete citations', () => {
+		const input = 'This has a complete citation [123] here';
+		const result = parseIncompleteMarkdown(input);
+
+		expect(result).toBe('This has a complete citation [123] here');
+	});
+
+	test('should not modify multiple complete citations', () => {
+		const input = 'Multiple citations [123] and [source1] and [anything]';
+		const result = parseIncompleteMarkdown(input);
+
+		expect(result).toBe('Multiple citations [123] and [source1] and [anything]');
 	});
 });

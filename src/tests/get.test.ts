@@ -53,7 +53,33 @@ describe('get: nested object paths', () => {
 	});
 });
 
-describe('get: array traversal', () => {
+describe('get: root-level array (citations)', () => {
+	test('returns the 1-indexed element from a root array', () => {
+		expect(get([{ id: 'a' }, { id: 'b' }, { id: 'c' }], '1')).toEqual({ id: 'a' });
+	});
+
+	test('returns the 1-indexed element with key 2', () => {
+		expect(get([{ id: 'a' }, { id: 'b' }, { id: 'c' }], '2')).toEqual({ id: 'b' });
+	});
+
+	test('returns null for an out-of-bounds 1-indexed key', () => {
+		expect(get([{ id: 'a' }, { id: 'b' }], '5')).toBeNull();
+	});
+
+	test('returns null for a zero key (1-indexed, so 0 is invalid)', () => {
+		expect(get([{ id: 'a' }, { id: 'b' }], '0')).toBeNull();
+	});
+
+	test('returns null for a non-numeric key on a root array', () => {
+		expect(get([{ id: 'a' }, { id: 'b' }], 'source1')).toBeNull();
+	});
+
+	test('returns null when root array is empty and key is 1', () => {
+		expect(get([], '1')).toBeNull();
+	});
+});
+
+describe('get: array traversal (nested)', () => {
 	test('indexes into arrays with numeric path segments', () => {
 		expect(get({ items: ['a', 'b', 'c'] }, 'items.1')).toBe('b');
 	});

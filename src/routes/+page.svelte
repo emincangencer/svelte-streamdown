@@ -220,6 +220,52 @@
 		<Streamdown
 			{content}
 			baseTheme="shadcn"
+			sources={{
+				cloudflare: {
+					website: {
+						title: 'Cloudflare',
+						url: 'https://www.cloudflare.com/',
+						content:
+							'Cloudflare is a global network designed to make everything you connect to the Internet secure, private, fast, and reliable.'
+					}
+				},
+				vercel: {
+					title: 'Vercel',
+					url: 'https://vercel.com',
+					content:
+						'Vercel is the platform for frontend developers, providing the speed and reliability innovators need to create at the moment of inspiration.'
+				},
+				ref: {
+					title: 'Reference Documentation',
+					url: 'https://example.com/reference',
+					content: 'Reference documentation content.'
+				},
+				ref2: {
+					title: 'Additional Reference',
+					url: 'https://example.com/reference-2',
+					content: 'Additional reference content.'
+				},
+				1: {
+					title: 'Numeric Source One',
+					url: 'https://example.com/one',
+					content: 'Source for key [1]'
+				},
+				123: {
+					title: 'Numeric Source 123',
+					url: 'https://example.com/123',
+					content: 'Source for key [123]'
+				},
+				source1: {
+					title: 'Text Source One',
+					url: 'https://example.com/source1',
+					content: 'Source for key [source1]'
+				},
+				anything: {
+					title: 'Anything Source',
+					url: 'https://example.com/anything',
+					content: 'Source for key [anything]'
+				}
+			}}
 			animation={{ enabled: animationEnabled }}
 			{shikiThemes}
 			shikiTheme={theme.resolvedTheme === 'dark' ? 'vitesse-dark' : 'vitesse-light'}
